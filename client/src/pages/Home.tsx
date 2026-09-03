@@ -4,6 +4,7 @@ import { AIChatBox, type Message } from "@/components/AIChatBox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
+import { Streamdown } from "streamdown";
 import {
   ArrowUpRight,
   Check,
@@ -64,6 +65,10 @@ export default function Home() {
     { enabled: Boolean(isAuthenticated && conversationId), refetchOnWindowFocus: false }
   );
   const tasksQuery = trpc.ava.listTasks.useQuery(undefined, {
+    enabled: isAuthenticated,
+    refetchOnWindowFocus: false,
+  });
+  const briefingsQuery = trpc.ava.listBriefings.useQuery(undefined, {
     enabled: isAuthenticated,
     refetchOnWindowFocus: false,
   });
@@ -202,6 +207,7 @@ export default function Home() {
 
         <section className="min-w-0">
           <div className="mb-4 flex items-end justify-between px-1"><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#635bff]"><span className="h-1.5 w-1.5 rounded-full bg-[#635bff]" /> Live session</div><h1 className="mt-1 text-2xl font-semibold tracking-[-0.045em] sm:text-3xl">Good to see you, {user?.name?.split(" ")[0] || "there"}.</h1></div><Button variant="outline" onClick={handleNewConversation} className="hidden h-9 gap-2 border-slate-200 bg-white text-xs text-slate-600 shadow-sm sm:flex"><Plus className="h-3.5 w-3.5" /> New thread</Button></div>
+          {briefingsQuery.data?.[0] && <div className="mb-4 rounded-[1.2rem] border border-indigo-100 bg-indigo-50/70 p-4 shadow-sm shadow-indigo-900/5"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-700"><Sparkles className="h-3.5 w-3.5" /> Morning briefing</div><span className="text-[11px] text-indigo-500">{formatDate(briefingsQuery.data[0].createdAt)}</span></div><div className="mt-2 max-h-44 overflow-y-auto text-sm leading-6 text-indigo-950/75"><Streamdown>{briefingsQuery.data[0].content}</Streamdown></div></div>}
           <div className="rounded-[1.4rem] border border-slate-200/80 bg-white p-2 shadow-[0_16px_50px_-30px_rgba(15,23,42,0.35)] sm:p-3"><AIChatBox messages={messages} onSendMessage={handleSend} isLoading={chatMutation.isPending} height="calc(100vh - 180px)" className="border-0 shadow-none" emptyStateMessage="Start with a thought, a decision, or a task." suggestedPrompts={suggestedPrompts} placeholder="Ask AVA anything…" /></div>
         </section>
 

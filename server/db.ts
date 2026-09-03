@@ -1,6 +1,8 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
+  briefings,
+  briefingSettings,
   conversations,
   InsertUser,
   messages,
@@ -158,4 +160,56 @@ export async function getTasksByIds(userId: number, ids: number[]) {
     .from(tasks)
     .where(and(eq(tasks.userId, userId), inArray(tasks.id, ids)))
     .limit(50);
+}
+
+export async function listPendingTasks(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(tasks)
+    .where(and(eq(tasks.userId, userId), inArray(tasks.status, ["todo", "in_progress"])))
+    .orderBy(desc(tasks.priority), desc(tasks.dueAt), desc(tasks.createdAt))
+    .limit(50);
+}
+
+export async function getBriefingSettings(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(briefingSettings).where(eq(briefingSettings.userId, userId)).limit(1);
+  return result[0];
+}
+
+export async function getBriefingSettingsByTaskUid(taskUid: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(briefingSettings).where(eq(briefingSettings.scheduleCronTaskUid, taskUid)).limit(1);
+  return result[0];
+}
+
+export async function upsertBriefingSettings(userId: number, values: { timeZone?: string; hour?: number; minute?: number; enabled?: number; scheduleCronTaskUid?: string | null }) {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db.insert(briefingSettings).values({ userId, ...values }).onDuplicateKeyUpdate({ set: values });
+  return getBriefingSettings(userId);
+}
+
+export async function listBriefings(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(briefings).where(eq(briefings.userId, userId)).orderBy(desc(briefings.briefingDate)).limit(14);
+}
+
+export async function getBriefingByDate(userId: number, briefingDate: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(briefings).where(and(eq(briefings.userId, userId), eq(briefings.briefingDate, briefingDate))).limit(1);
+  return result[0];
+}
+
+export async function saveBriefing(values: { userId: number; briefingDate: string; content: string; taskCount: number; eventCount: number }) {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db.insert(briefings).values(values).onDuplicateKeyUpdate({ set: { content: values.content, taskCount: values.taskCount, eventCount: values.eventCount } });
+  return getBriefingByDate(values.userId, values.briefingDate);
 }

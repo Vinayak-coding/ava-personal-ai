@@ -15,6 +15,13 @@
       "when": 1788423962156,
       "tag": "0001_sweet_nocturne",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1788424630118,
+      "tag": "0002_cool_doctor_faustus",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,7 @@ import {
   createConversation,
   createTask,
   getConversation,
+  listBriefings,
   listConversations,
   listTasks,
   renameConversation,
@@ -82,6 +83,7 @@ export const appRouter = router({
   }),
   ava: router({
     listConversations: protectedProcedure.query(({ ctx }) => listConversations(ctx.user.id)),
+    listBriefings: protectedProcedure.query(({ ctx }) => listBriefings(ctx.user.id)),
     getConversation: protectedProcedure
       .input(z.object({ id: z.number().int().positive() }))
       .query(({ ctx, input }) => getConversation(ctx.user.id, input.id)),
