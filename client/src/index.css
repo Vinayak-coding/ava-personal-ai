@@ -43,15 +43,15 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
+  --primary: oklch(0.54 0.25 277);
+  --primary-foreground: oklch(0.99 0.01 277);
+  --sidebar-primary: oklch(0.54 0.25 277);
+  --sidebar-primary-foreground: oklch(0.99 0.01 277);
+  --chart-1: oklch(0.67 0.2 178);
+  --chart-2: oklch(0.54 0.25 277);
+  --chart-3: oklch(0.7 0.16 72);
+  --chart-4: oklch(0.62 0.22 310);
+  --chart-5: oklch(0.7 0.15 220);
   --radius: 0.65rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.235 0.015 65);
@@ -119,6 +119,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: oklch(0.87 0.09 277);
+    color: oklch(0.25 0.12 277);
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
